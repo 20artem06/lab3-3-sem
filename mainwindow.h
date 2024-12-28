@@ -29,7 +29,7 @@ private slots:
 
 private:
     TextProcessor processor;
-    void displayIndex(const std::map<std::string, int>& index);
+    void displayIndex(const TextIndex& index);
     void displayTestResults(const std::ostringstream& results);
 
     QTextEdit *textEdit;

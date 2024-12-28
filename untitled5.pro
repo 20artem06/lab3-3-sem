@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     SearchAlgorithms.cpp \
     Tests.cpp \
+    TextIndex.cpp \
     TextProcessor.cpp \
     main.cpp \
     mainwindow.cpp
@@ -19,6 +20,7 @@ HEADERS += \
     DataStructure.h \
     SearchAlgorithms.h \
     Tests.h \
+    TextIndex.h \
     TextProcessor.h \
     mainwindow.h
 

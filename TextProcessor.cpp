@@ -7,28 +7,34 @@ std::vector<std::string> TextProcessor::splitWords(const std::string& text) {
     return words;
 }
 
-void TextProcessor::paginateWords(const std::vector<std::string>& words, int pageSize, std::map<std::string, int>& index) {
-    int wordCount = 0;
+TextIndex TextProcessor::createTextIndex(const std::string& text, int pageSize) {
+    TextIndex index;
+    int charCount = 0;
     int page = 1;
+    int position = 0;
+    std::string currentWord;
 
-    for (const auto& word : words) {
-        if (wordCount < pageSize / 2 && page == 1) {
-            index[word] = page;
-            ++wordCount;
-        } else if (wordCount < (page * (pageSize * 0.75))) {
-            index[word] = page;
-            ++wordCount;
+    for (size_t i = 0; i < text.size(); ++i) {
+        if (std::isalpha(text[i]) || std::isdigit(text[i])){
+            currentWord += text[i];
+            charCount++;
+            position++;
         } else {
-            ++page;
-            wordCount = 1;
-            index[word] = page;
+            if (!currentWord.empty()) {
+                index.addWord(currentWord, TextIndex::Location(page, position - currentWord.length() + 1));
+                currentWord = "";
+            }
+
+        }
+        if(charCount >= pageSize){
+            page++;
+            charCount = 0;
+            position = 0;
         }
     }
-}
 
-std::map<std::string, int> TextProcessor::createAlphabeticalIndex(const std::string& text, int pageSize) {
-    std::map<std::string, int> index;
-    std::vector<std::string> words = splitWords(text);
-    paginateWords(words, pageSize, index);
+    if (!currentWord.empty()) {
+        index.addWord(currentWord, TextIndex::Location(page, position - currentWord.length() + 1));
+    }
     return index;
 }

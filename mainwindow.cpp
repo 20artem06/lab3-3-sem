@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(new QLabel("Введите текст:"));
     layout->addWidget(textEdit);
-    layout->addWidget(new QLabel("Размер страницы (в словах):"));
+    layout->addWidget(new QLabel("Размер страницы (в символах):"));
     layout->addWidget(pageSizeSpinBox);
     layout->addWidget(processButton);
     layout->addWidget(runTestsButton);
@@ -44,7 +44,6 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 MainWindow::~MainWindow() {
-    // Удаление объектов не обязательно, так как они совместно используют родительский виджет
 }
 
 void MainWindow::on_processButton_clicked() {
@@ -56,20 +55,26 @@ void MainWindow::on_processButton_clicked() {
         return;
     }
 
-    std::map<std::string, int> index = processor.createAlphabeticalIndex(inputText.toStdString(), pageSize);
+    TextIndex index = processor.createTextIndex(inputText.toStdString(), pageSize);
     displayIndex(index);
 }
 
-void MainWindow::displayIndex(const std::map<std::string, int>& index) {
+void MainWindow::displayIndex(const TextIndex& index) {
     resultTextEdit->clear();
 
     QString result;
-    for (const auto &pair : index) {
-        result += QString::fromStdString(pair.first) + " - страница " + QString::number(pair.second) + "\n";
-    }
+    for (const auto& word : index.getWords()) {
+        result += QString::fromStdString(word) + " - ";
 
+        auto locations = index.getWordLocations(word);
+        for(const auto& loc : locations){
+            result += QString("стр. ") + QString::number(loc.page) + ", поз. " + QString::number(loc.position) + " ";
+        }
+        result += "\n";
+    }
     resultTextEdit->setPlainText(result);
 }
+
 
 void MainWindow::on_runTestsButton_clicked() {
     Tests tests;
